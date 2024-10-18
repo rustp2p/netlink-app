@@ -9,15 +9,16 @@ fn get_api_url() -> String {
 		let current_path = std::env::current_dir();
 		match current_path{
 			Ok(path)=>{
-				let file_path = path.join("host.toml");
-				match Config::from_config_file(file_path){
-					Ok(config)=>{
-						config.host
-					}
-					Err(_e)=>{
-						"http://127.0.0.1:23336".to_string()
-					}
-				}
+				return format!("{path:?}")
+				// let file_path = path.join("host.toml");
+				// match Config::from_config_file(file_path){
+				// 	Ok(config)=>{
+				// 		config.host
+				// 	}
+				// 	Err(_e)=>{
+				// 		"http://127.0.0.1:23336".to_string()
+				// 	}
+				// }
 			}
 			Err(_e)=>{
 				"http://127.0.0.1:23336".to_string()
