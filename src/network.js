@@ -3,7 +3,8 @@ import { invoke } from '@tauri-apps/api/core';
 
 
 export const new_req = async function () {
-	const api_url = await invoke("get_api_url");
+	const api_url = window.__TAURI_INTERNALS__? await invoke("get_api_url"):window.api_url;
+	//console.log(api_url);
 	const req = axios.create({
 		baseURL: `${api_url}`,
 		timeout: 5000,
@@ -25,6 +26,7 @@ export const new_req = async function () {
 
 	req.interceptors.response.use(function (response) {
 		// 对响应数据做点什么
+		//console.log("网络错误",response)
 		if (response.status !== 200) {
 			return Promise.reject("接口错误");
 		}
@@ -62,6 +64,7 @@ req.interceptors.request.use(async function (config) {
 req.interceptors.response.use(function (response) {
 	// 对响应数据做点什么
 	if (response.status !== 200) {
+		console.log("网络错误")
 		return Promise.reject("接口错误");
 	}
 	if (response.data.code === 400) {
@@ -76,6 +79,7 @@ req.interceptors.response.use(function (response) {
 
 export const check_error = (e, message, navigator) => {
 	if (e && e.response) {
+		//console.log(e.response);
 		if (e.response.status === 404) {
 			message.error(`${e.response.statusText}`);
 		}

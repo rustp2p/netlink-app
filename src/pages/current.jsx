@@ -13,7 +13,6 @@ export default function Current() {
 	});
 
 	const [messageApi, contextHolder] = message.useMessage();
-	void contextHolder;
 	const [pageReload, setPageReload] = useState(1);
 	const [currentInfo, setCurrentInfo] = useState({});
 	const [nodeInfo, setNodeInfo] = useState([]);
@@ -145,6 +144,7 @@ export default function Current() {
 					<Table columns={columns} dataSource={nodeInfo} size='small' pagination={false} rowKey="node_id"></Table>
 				</div>
 			</div>
+			{contextHolder}
 		</div>
 	);
 }

@@ -13,7 +13,6 @@ export default function Group() {
 	});
 
 	const [messageApi, contextHolder] = message.useMessage();
-	void contextHolder;
 	const [pageReload, setPageReload] = useState(1);
 	const [groupInfo, setGroupInfo] = useState([]);
 	const columns = [
@@ -59,6 +58,7 @@ export default function Group() {
 					<Table size='small' pagination={false} columns={columns} dataSource={groupInfo} rowKey="group_code" />
 				</div>
 			</div>
+			{contextHolder}
 		</div>
 	);
 }

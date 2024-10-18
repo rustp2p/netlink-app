@@ -13,7 +13,6 @@ export default function Group() {
 	});
 
 	const [messageApi, contextHolder] = message.useMessage();
-	void contextHolder;
 	const [pageReload, setPageReload] = useState(1);
 	const [nodesList, setNodesList] = useState([]);
 	const [searchKey,setSearchKey] = useState("");
@@ -78,6 +77,7 @@ export default function Group() {
 					<Table size='small' pagination={false} columns={columns} dataSource={nodesList} rowKey="id" />
 				</div>
 			</div>
+			{contextHolder}
 		</div>
 	);
 }
