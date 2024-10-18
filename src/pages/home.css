@@ -1,0 +1,36 @@
+.home-page{
+	min-height: 100vh;
+	width:100%;
+}
+
+.home-page .whole-layout{
+	min-height: 100vh;
+}
+.home-page  .main-layout{
+	min-width: 600px;
+}
+.home-page .whole-layout .demo-logo-vertical{
+	height: 64px;
+	width:100%;
+}
+.home-page  .avatar-part{
+	height: 100%;
+	float: right;
+	padding-right: 20px;
+	cursor: pointer;
+}
+.home-page .main-content{
+	position: relative;
+}
+.home-page .main-stage{
+	position: absolute;
+	inset: 0;
+}
+.home-page .inner-main-stage{
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background: #FFF;
+	border-radius: 8px;
+	overflow: auto;
+}
