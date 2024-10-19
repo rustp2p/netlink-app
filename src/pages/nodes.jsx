@@ -1,4 +1,4 @@
-import { Button, Table, message, Row, Col, Tag, Input } from 'antd';
+import { Button, Table, message, Row, Col, Tag, Input ,notification} from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { useNavigate, } from "react-router-dom";
 import { useEffect, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ export default function Group() {
 	const [pageReload, setPageReload] = useState(1);
 	const [nodesList, setNodesList] = useState([]);
 	const [searchKey,setSearchKey] = useState("");
+	const [api, NotificationContext] = notification.useNotification();
 	const columns = [
 		{
 			title: '节点ID',
@@ -54,9 +55,19 @@ export default function Group() {
 				const req = await new_req();
 				const res = await req.get(`/api/nodes-by-group/${searchKey}`);
 				//console.log(res);
-				setNodesList(res.data.data.map((item,key)=>{
-					return {id:key,...item};
-				}));
+				if(res.data.code===200){
+					setNodesList(res.data.data.map((item,key)=>{
+						return {id:key,...item};
+					}));
+				}else if (res.data.code === 503) {
+					api.error({
+						key: "shutdown",
+						message: '提示',
+						description: '节点尚未启动',
+					});
+				} else {
+					messageApi.error(`${res.data.data}`);
+				}
 			} catch (e) {
 				//console.log(e);
 				check_error(e, messageApi, navigate);
@@ -78,6 +89,7 @@ export default function Group() {
 				</div>
 			</div>
 			{contextHolder}
+			{NotificationContext}
 		</div>
 	);
 }

@@ -1,4 +1,4 @@
-import { Button, Table, message, Row, Col, Tag ,Input} from 'antd';
+import { Button, Table, message, Row, Col, Tag, Input, notification } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { useNavigate, } from "react-router-dom";
 import { useEffect, useRef, useState } from 'react';
@@ -15,6 +15,7 @@ export default function Group() {
 	const [messageApi, contextHolder] = message.useMessage();
 	const [pageReload, setPageReload] = useState(1);
 	const [groupInfo, setGroupInfo] = useState([]);
+	const [api, NotificationContext] = notification.useNotification();
 	const columns = [
 		{
 			title: '组名',
@@ -34,7 +35,17 @@ export default function Group() {
 				const req = await new_req();
 				const res = await req.get(`/api/groups`);
 				//console.log(res);
-				setGroupInfo(res.data.data);
+				if (res.data.code === 200) {
+					setGroupInfo(res.data.data);
+				} else if (res.data.code === 503) {
+					api.error({
+						key: "shutdown",
+						message: '提示',
+						description: '节点尚未启动',
+					});
+				} else {
+					messageApi.error(`${res.data.data}`);
+				}
 			} catch (e) {
 				check_error(e, messageApi, navigate);
 			}
@@ -42,14 +53,14 @@ export default function Group() {
 		fetch();
 	}, [pageReload, messageApi, navigate]);
 
-	useEffect(()=>{
-		const time_id = setInterval(()=>{
-			setPageReload(r=>r+1);
-		},[2000]);
-		return ()=>{
+	useEffect(() => {
+		const time_id = setInterval(() => {
+			setPageReload(r => r + 1);
+		}, [2000]);
+		return () => {
 			clearInterval(time_id);
 		}
-	},[]);
+	}, []);
 
 	return (
 		<div>
@@ -59,6 +70,7 @@ export default function Group() {
 				</div>
 			</div>
 			{contextHolder}
+			{NotificationContext}
 		</div>
 	);
 }

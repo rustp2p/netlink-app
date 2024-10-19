@@ -27,12 +27,12 @@ export const new_req = async function () {
 	req.interceptors.response.use(function (response) {
 		// 对响应数据做点什么
 		//console.log("网络错误",response)
-		if (response.status !== 200) {
-			return Promise.reject("接口错误");
-		}
-		if (response.data.code === 400) {
-			return Promise.reject("接口错误");
-		}
+		// if (response.status !== 200) {
+		// 	return Promise.reject("接口错误");
+		// }
+		// if (response.data.code === 400) {
+		// 	return Promise.reject("接口错误");
+		// }
 		return response;
 	}, function (error) {
 		// 对响应错误做点什么
