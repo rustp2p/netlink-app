@@ -2,8 +2,16 @@ name: Build and Deploy
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    # necessary for windows
+    shell: bash
 
 jobs:
   build:
