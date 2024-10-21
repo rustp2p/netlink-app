@@ -36,6 +36,12 @@ jobs:
           TAG=$GITHUB_SHA
           fi
           tar -czf ./artifacts/static-web-$TAG.tar.gz ./dist
+      - name: Archive artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: netlink-app
+          path: |
+            ./artifacts/*
   deploy:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
