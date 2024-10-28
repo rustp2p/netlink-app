@@ -7,7 +7,7 @@ export const new_req = async function () {
 	//console.log(api_url);
 	const req = axios.create({
 		baseURL: `${api_url}`,
-		timeout: 5000,
+		timeout: 10000,
 	});
 	req.interceptors.request.use(async function (config) {
 		// 在发送请求之前做些什么
