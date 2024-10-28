@@ -19,6 +19,7 @@ export default function Current() {
 		prefix: 24,
 		node_ipv6: null,
 		prefix_v6: 96,
+		port:23333,
 		tun_name: null,
 		encrypt: null,
 		algorithm: "chacha20-poly1305",
@@ -355,6 +356,12 @@ export default function Current() {
 						<Form.Item
 							label="本地绑定端口"
 							name="port"
+							rules={[
+								{
+									required: true,
+									message: '请输入本地绑定端口',
+								},
+							]}
 						>
 							<Input value={currentConfig.port} onChange={(e) => {
 								setCurrentConfig({
