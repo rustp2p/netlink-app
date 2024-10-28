@@ -127,7 +127,7 @@ export default function Current() {
 
 	useEffect(() => {
 		const time_id = setInterval(() => {
-			setPageReload(r => r + 1);
+			//setPageReload(r => r + 1);
 		}, [2000]);
 		return () => {
 			clearInterval(time_id);
