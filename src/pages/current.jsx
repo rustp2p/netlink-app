@@ -12,12 +12,39 @@ export default function Current() {
 		pageSize: 15
 	});
 
+	const default_config = {
+		config_name: "default",
+		group_code: "",
+		node_ipv4: "",
+		prefix: 24,
+		node_ipv6: null,
+		prefix_v6: 96,
+		tun_name: null,
+		encrypt: null,
+		algorithm: "chacha20-poly1305",
+		bind_dev_name: null,
+		exit_node: null,
+		peer: [],
+		udp_stun: [
+			"stun.miwifi.com",
+			"stun.chat.bilibili.com",
+			"stun.hitv.com",
+			"stun.l.google.com:19302",
+			"stun1.l.google.com:19302",
+			"stun2.l.google.com:19302",
+		],
+		tcp_stun: [
+			"stun.flashdance.cx",
+			"stun.sipnet.net",
+			"stun.nextcloud.com:443",
+		]
+	};
 	const [messageApi, contextHolder] = message.useMessage();
 	const [pageReload, setPageReload] = useState(1);
 	const [currentInfo, setCurrentInfo] = useState({});
 	const [nodeInfo, setNodeInfo] = useState([]);
 	const [configOpen, setConfigOpen] = useState(false);
-	const [currentConfig, setCurrentConfig] = useState({});
+	const [currentConfig, setCurrentConfig] = useState(default_config);
 	const [loadingConfig, setLoadingConfig] = useState(false);
 	const [formHandler] = Form.useForm();
 	const [api, NotificationContext] = notification.useNotification();
@@ -117,9 +144,9 @@ export default function Current() {
 								const req = await new_req();
 								const res = await req.get(`/api/current-config`);
 								if (res.data.code === 200) {
-									setCurrentConfig(res.data.data);
+									setCurrentConfig(res.data.data === null ? default_config : res.data.data);
 									formHandler.setFieldsValue({
-										...res.data.data
+										...(res.data.data === null ? default_config : res.data.data)
 									})
 									setConfigOpen(true);
 								} else {
@@ -273,6 +300,23 @@ export default function Current() {
 						autoComplete="off"
 					>
 						<Form.Item
+							label="配置名"
+							name="config_name"
+							rules={[
+								{
+									required: true,
+									message: '请输入配置名',
+								},
+							]}
+						>
+							<Input value={currentConfig.config_name} onChange={(e) => {
+								setCurrentConfig({
+									...currentConfig,
+									config_name: e.target.value
+								})
+							}} />
+						</Form.Item>
+						<Form.Item
 							label="节点地址(V4)"
 							name="node_ipv4"
 							rules={[
@@ -293,6 +337,12 @@ export default function Current() {
 						<Form.Item
 							label="V4掩码"
 							name="prefix"
+							rules={[
+								{
+									required: true,
+									message: '请输入V4掩码',
+								},
+							]}
 						>
 							<Input value={currentConfig.prefix} onChange={(e) => {
 								setCurrentConfig({
@@ -329,6 +379,12 @@ export default function Current() {
 						<Form.Item
 							label="V6掩码"
 							name="prefix_v6"
+							rules={[
+								{
+									required: true,
+									message: '请输入V6掩码',
+								},
+							]}
 						>
 							<Input value={currentConfig.prefix_v6} onChange={(e) => {
 								setCurrentConfig({
@@ -341,6 +397,12 @@ export default function Current() {
 						<Form.Item
 							label="所在组"
 							name="group_code"
+							rules={[
+								{
+									required: true,
+									message: '请输入组名',
+								},
+							]}
 						>
 							<Input value={currentConfig.group_code} onChange={(e) => {
 								setCurrentConfig({
@@ -377,6 +439,12 @@ export default function Current() {
 						<Form.Item
 							label="加密算法"
 							name="algorithm"
+							rules={[
+								{
+									required: true,
+									message: '请输入加密算法',
+								},
+							]}
 						>
 							<Input value={currentConfig.algorithm} onChange={(e) => {
 								setCurrentConfig({
