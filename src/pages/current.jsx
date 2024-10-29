@@ -1,4 +1,4 @@
-import { Button, Table, message, Row, Col, Tag, Space, Modal, Form, Input, Popconfirm, notification } from 'antd';
+import { Button, Table, message, Row, Col, Tag, Space, Modal, Form, Input, Popconfirm, notification, Select } from 'antd';
 import { SettingOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useNavigate, } from "react-router-dom";
 import { useEffect, useRef, useState } from 'react';
@@ -19,7 +19,7 @@ export default function Current() {
 		prefix: 24,
 		node_ipv6: null,
 		prefix_v6: 96,
-		port:23333,
+		port: 23333,
 		tun_name: null,
 		encrypt: null,
 		algorithm: "chacha20-poly1305",
@@ -51,6 +51,7 @@ export default function Current() {
 	const [api, NotificationContext] = notification.useNotification();
 	const hasError1 = useRef(false);
 	const hasError2 = useRef(false);
+	const [encryptOption, setEncryptOption] = useState([]);
 	const columns = [
 		{
 			title: '节点ID',
@@ -83,6 +84,30 @@ export default function Current() {
 		const fetch = async () => {
 			try {
 				const req = await new_req();
+				const res = await req.get(`/api/application-info`);
+				//console.log(res);
+				if (res.data.code === 200) {
+					setEncryptOption(res.data.data.algorithm_list);
+				} else if (res.data.code === 503) {
+					api.error({
+						key: "shutdown",
+						message: '提示',
+						description: '节点尚未启动',
+					});
+				} else {
+					messageApi.error(`${res.data.data}`);
+				}
+			} catch (e) {
+				check_error(e, messageApi, navigate);
+			}
+		};
+		fetch();
+	}, [])
+
+	useEffect(() => {
+		const fetch = async () => {
+			try {
+				const req = await new_req();
 				const res = await req.get(`/api/current-info`);
 				//console.log(res);
 				if (res.data.code === 200) {
@@ -101,6 +126,7 @@ export default function Current() {
 				}
 			} catch (e) {
 				check_error(e, messageApi, navigate);
+				hasError1.current = true;
 			}
 		};
 		fetch();
@@ -128,6 +154,7 @@ export default function Current() {
 				}
 			} catch (e) {
 				check_error(e, messageApi, navigate);
+				hasError2.current = true;
 			}
 		};
 		fetch();
@@ -135,7 +162,7 @@ export default function Current() {
 
 	useEffect(() => {
 		const time_id = setInterval(() => {
-			if (hasError2.current || hasError1.current){
+			if (hasError2.current || hasError1.current) {
 				return;
 			}
 			setPageReload(r => r + 1);
@@ -466,12 +493,18 @@ export default function Current() {
 								},
 							]}
 						>
-							<Input value={currentConfig.algorithm} onChange={(e) => {
+							<Select options={encryptOption.map((item) => { return { label: item, value: item } })} onChange={(e) => {
+								setCurrentConfig({
+									...currentConfig,
+									algorithm: e
+								})
+							}}></Select>
+							{/* <Input value={currentConfig.algorithm} onChange={(e) => {
 								setCurrentConfig({
 									...currentConfig,
 									algorithm: e.target.value
 								})
-							}} />
+							}} /> */}
 						</Form.Item>
 
 						<Form.Item
