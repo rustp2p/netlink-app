@@ -49,6 +49,8 @@ export default function Current() {
 	const [loadingConfig, setLoadingConfig] = useState(false);
 	const [formHandler] = Form.useForm();
 	const [api, NotificationContext] = notification.useNotification();
+	const hasError1 = useRef(false);
+	const hasError2 = useRef(false);
 	const columns = [
 		{
 			title: '节点ID',
@@ -85,14 +87,17 @@ export default function Current() {
 				//console.log(res);
 				if (res.data.code === 200) {
 					setCurrentInfo(res.data.data);
+					hasError1.current = false;
 				} else if (res.data.code === 503) {
 					api.error({
 						key: "shutdown",
 						message: '提示',
 						description: '节点尚未启动',
 					});
+					hasError1.current = true;
 				} else {
 					messageApi.error(`${res.data.data}`);
+					hasError1.current = true;
 				}
 			} catch (e) {
 				check_error(e, messageApi, navigate);
@@ -109,14 +114,17 @@ export default function Current() {
 				//console.log(res);
 				if (res.data.code === 200) {
 					setNodeInfo(res.data.data);
+					hasError2.current = false;
 				} else if (res.data.code === 503) {
 					api.error({
 						key: "shutdown",
 						message: '提示',
 						description: '节点尚未启动',
 					});
+					hasError2.current = true;
 				} else {
 					messageApi.error(`${res.data.data}`);
+					hasError2.current = true;
 				}
 			} catch (e) {
 				check_error(e, messageApi, navigate);
@@ -127,7 +135,10 @@ export default function Current() {
 
 	useEffect(() => {
 		const time_id = setInterval(() => {
-			//setPageReload(r => r + 1);
+			if (hasError2.current || hasError1.current){
+				return;
+			}
+			setPageReload(r => r + 1);
 		}, [2000]);
 		return () => {
 			clearInterval(time_id);
@@ -167,6 +178,8 @@ export default function Current() {
 									const req = await new_req();
 									const res = await req.get(`/api/open`);
 									if (res.data.code === 200) {
+										hasError1.current = false;
+										hasError2.current = false;
 									} else {
 										message.error(`${res.data.data}`);
 									}
