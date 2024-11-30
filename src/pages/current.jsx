@@ -187,7 +187,8 @@ export default function Current() {
 								const res = await req.get(`/api/current-config`);
 								if (res.data.code === 200) {
 									const current_config = res.data.data === null ? default_config : res.data.data;
-									current_config.group_code_filter = current_config.group_code_filter === null ? "" : current_config.group_code_filter.join(",");
+									current_config.group_code_filter = current_config.group_code_filter === null ? "" : current_config.group_code_filter.join("\n");
+									current_config.group_code_filter_regex = current_config.group_code_filter_regex === null ? "" : current_config.group_code_filter_regex.join("\n");
 									setCurrentConfig(current_config);
 									formHandler.setFieldsValue({
 										...current_config
@@ -329,8 +330,11 @@ export default function Current() {
 							setLoadingConfig(true);
 							try {
 								const req = await new_req();
-								currentConfig.group_code_filter = currentConfig.group_code_filter === null ? null : currentConfig.group_code_filter.split(",").map((e) => { return e.trim() }).filter((e) => e !== "");
-								currentConfig.mtu = currentConfig.mtu?parseInt(currentConfig.mtu):1500;
+								const group_code_filter = currentConfig.group_code_filter;
+								const group_code_filter_regex = currentConfig.group_code_filter_regex
+								currentConfig.group_code_filter_regex = group_code_filter_regex === "" ? null : group_code_filter_regex.replace(/\r/gi,"\n").split("\n").map((e) => { return e.trim() }).filter((e) => e !== "");
+								currentConfig.group_code_filter = group_code_filter === "" ? null : group_code_filter.replace(/\r/gi,"\n").split("\n").map((e) => { return e.trim() }).filter((e) => e !== "");
+								currentConfig.mtu = currentConfig.mtu ? parseInt(currentConfig.mtu) : 1500;
 								const res = await req.post(`/api/update-config`, {
 									...currentConfig
 								});
@@ -591,38 +595,27 @@ export default function Current() {
 							</Row>
 						</Form.Item>
 						<Form.Item
-							label="白名单组(以英文`,`分割)"
+							label="白名单组(换行分割)"
 							name="group_code_filter"
-						// dependencies={['group_code_filter_regex']}
-						// rules={[
-						// 	({ getFieldValue }) => ({
-						// 		validator(_, value) {
-						// 			if (!value || getFieldValue('group_code_filter_regex')) {
-						// 				return Promise.resolve();
-						// 			}
-						// 			return Promise.reject(new Error('缺少白名单组正则'));
-						// 		},
-						// 	}),
-						// ]}
 						>
-							<Input value={currentConfig.group_code_filter} onChange={(e) => {
+							<Input.TextArea value={currentConfig.group_code_filter} onChange={(e) => {
 								setCurrentConfig({
 									...currentConfig,
 									group_code_filter: e.target.value
 								})
 							}} />
 						</Form.Item>
-						{/* <Form.Item
-							label="白名单组正则"
+						<Form.Item
+							label="白名单组正则(换行分割)"
 							name="group_code_filter_regex"
 						>
-							<Input value={currentConfig.group_code_filter_regex} onChange={(e) => {
+							<Input.TextArea value={currentConfig.group_code_filter_regex} onChange={(e) => {
 								setCurrentConfig({
 									...currentConfig,
 									group_code_filter_regex: e.target.value
 								})
 							}} />
-						</Form.Item> */}
+						</Form.Item>
 						<Form.Item
 							wrapperCol={{
 								offset: 8,
