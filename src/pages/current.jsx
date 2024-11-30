@@ -14,12 +14,12 @@ export default function Current() {
 
 	const default_config = {
 		config_name: "default",
-		group_code: "",
-		node_ipv4: "",
+		group_code: null,
+		node_ipv4: null,
 		prefix: 24,
 		node_ipv6: null,
 		prefix_v6: 96,
-		mtu: 1500,
+		mtu: 1400,
 		group_code_filter: null,
 		group_code_filter_regex: null,
 		port: 23333,
@@ -29,19 +29,8 @@ export default function Current() {
 		bind_dev_name: null,
 		exit_node: null,
 		peer: [],
-		udp_stun: [
-			"stun.miwifi.com",
-			"stun.chat.bilibili.com",
-			"stun.hitv.com",
-			"stun.l.google.com:19302",
-			"stun1.l.google.com:19302",
-			"stun2.l.google.com:19302",
-		],
-		tcp_stun: [
-			"stun.flashdance.cx",
-			"stun.sipnet.net",
-			"stun.nextcloud.com:443",
-		]
+		udp_stun: null,
+		tcp_stun: null
 	};
 	const [messageApi, contextHolder] = message.useMessage();
 	const [pageReload, setPageReload] = useState(1);
@@ -334,7 +323,8 @@ export default function Current() {
 								const group_code_filter_regex = currentConfig.group_code_filter_regex
 								currentConfig.group_code_filter_regex = group_code_filter_regex === "" ? null : group_code_filter_regex.replace(/\r/gi,"\n").split("\n").map((e) => { return e.trim() }).filter((e) => e !== "");
 								currentConfig.group_code_filter = group_code_filter === "" ? null : group_code_filter.replace(/\r/gi,"\n").split("\n").map((e) => { return e.trim() }).filter((e) => e !== "");
-								currentConfig.mtu = currentConfig.mtu ? parseInt(currentConfig.mtu) : 1500;
+								currentConfig.mtu = currentConfig.mtu ? parseInt(currentConfig.mtu) : null;
+								currentConfig.node_ipv6 = currentConfig.node_ipv6 ? currentConfig.node_ipv6 : null;
 								const res = await req.post(`/api/update-config`, {
 									...currentConfig
 								});
@@ -368,6 +358,25 @@ export default function Current() {
 								})
 							}} />
 						</Form.Item>
+
+						<Form.Item
+							label="所在组"
+							name="group_code"
+							rules={[
+								{
+									required: true,
+									message: '请输入组名',
+								},
+							]}
+						>
+							<Input value={currentConfig.group_code} onChange={(e) => {
+								setCurrentConfig({
+									...currentConfig,
+									group_code: e.target.value
+								})
+							}} />
+						</Form.Item>
+
 						<Form.Item
 							label="节点地址(V4)"
 							name="node_ipv4"
@@ -439,7 +448,7 @@ export default function Current() {
 							name="prefix_v6"
 							rules={[
 								{
-									required: true,
+									required: false,
 									message: '请输入V6掩码',
 								},
 							]}
@@ -457,7 +466,7 @@ export default function Current() {
 							name="mtu"
 							rules={[
 								{
-									required: true,
+									required: false,
 									message: '请输入mtu大小',
 								},
 							]}
@@ -466,24 +475,6 @@ export default function Current() {
 								setCurrentConfig({
 									...currentConfig,
 									mtu: e.target.value
-								})
-							}} />
-						</Form.Item>
-
-						<Form.Item
-							label="所在组"
-							name="group_code"
-							rules={[
-								{
-									required: true,
-									message: '请输入组名',
-								},
-							]}
-						>
-							<Input value={currentConfig.group_code} onChange={(e) => {
-								setCurrentConfig({
-									...currentConfig,
-									group_code: e.target.value
 								})
 							}} />
 						</Form.Item>
@@ -517,7 +508,7 @@ export default function Current() {
 							name="algorithm"
 							rules={[
 								{
-									required: true,
+									required: false,
 									message: '请输入加密算法',
 								},
 							]}
