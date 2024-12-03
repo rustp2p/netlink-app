@@ -7,15 +7,17 @@ import Home from "./pages/home";
 import Current from "./pages/current";
 import Group from "./pages/group";
 import Nodes from "./pages/nodes";
+import Launcher from "./pages/launcher";
+import Login from "./pages/login";
 
 export const router = createBrowserRouter([
 	{
 		path:"/",
-		element:<Navigate to="/home/current" replace></Navigate>
+		element:<Launcher />
 	},
 	{
-		path:"*",
-		element:<Navigate to="/home/current" replace></Navigate>
+		path:"/login",
+		element:<Login />
 	},
 	{
 		path:"/home",

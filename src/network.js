@@ -14,7 +14,8 @@ export const new_req = async function () {
 		//console.log("config == ", config);
 		try {
 			// const token = await localforage.getItem("token");
-			// config["headers"]["Authorization"] = `Bearer ${token}`;
+			const token = window.localStorage.getItem("token");
+			config["headers"]["Authorization"] = `Bearer ${token}`;
 		} catch (e) {
 
 		}
@@ -30,9 +31,9 @@ export const new_req = async function () {
 		// if (response.status !== 200) {
 		// 	return Promise.reject("接口错误");
 		// }
-		// if (response.data.code === 400) {
-		// 	return Promise.reject("接口错误");
-		// }
+		if (response.status===200 && response.data.code === 401) {
+			return Promise.reject({response:response.data});
+		}
 		return response;
 	}, function (error) {
 		// 对响应错误做点什么
@@ -78,8 +79,13 @@ req.interceptors.response.use(function (response) {
 
 
 export const check_error = (e, message, navigator) => {
+	console.log(e.response);
 	if (e && e.response) {
-		//console.log(e.response);
+		if(e.response.code===401){
+			message.error(`error: ${e.response.data}`);
+			navigator("/login");
+			return;
+		}
 		if (e.response.status === 404) {
 			message.error(`${e.response.statusText}`);
 		}
